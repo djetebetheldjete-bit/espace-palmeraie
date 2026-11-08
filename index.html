@@ -1,0 +1,540 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta name="theme-color" content="#0B2B26"><title>Espace Palmeraie</title><meta name="claude:viewport-fit-sides" content="cover"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,800&family=Figtree:wght@400;600&display=swap"><style id="app-css">
+/* Une seule page : le site du restaurant, et l'espace du gérant sur #admin qui republie la page avec les nouvelles données. */
+:root{--night:#0B2B26;--leaf:#1F6B4A;--mango:#F4A21D;--bg:#F1F5E4;--ink:#12302A;--card:#E3EBCB;--muted:#4B6358;--line:rgba(31,107,74,.3);--accent-text:#1F6B4A;--on-night:#F1F5E4;--on-night-soft:#C9D8BE;--mango-ink:#1b1300;--gl:max(1.25rem,env(safe-area-inset-left,0px));--gr:max(1.25rem,env(safe-area-inset-right,0px))}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1F1B;--ink:#EAF1DA;--card:#173128;--muted:#A9BDB0;--line:rgba(234,241,218,.25);--accent-text:#F4A21D;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0F1F1B;--ink:#EAF1DA;--card:#173128;--muted:#A9BDB0;--line:rgba(234,241,218,.25);--accent-text:#F4A21D;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 1.05rem/1.6 Figtree,system-ui,sans-serif}
+h1,h2,h3{font-family:"Bricolage Grotesque",Georgia,sans-serif;line-height:1.05;margin:0;text-wrap:balance}
+.gut{padding-left:var(--gl);padding-right:var(--gr)}
+.hero{position:relative;min-height:100vh;min-height:100svh;background:linear-gradient(#0B2B26 55%,#14493A);color:var(--on-night);display:grid;place-items:center;text-align:center;overflow:hidden;padding-block:2rem}
+.sun{position:absolute;left:50%;bottom:-14vmin;width:62vmin;height:62vmin;margin-left:-31vmin;border-radius:50%;background:radial-gradient(circle,#FFD36B,#F4A21D 60%,#E8791A);animation:rise 2.2s cubic-bezier(.2,.8,.2,1) both}
+.fr{position:absolute;top:-30px;width:min(70vw,420px);height:auto;transform-origin:0 0;animation:sway 6s ease-in-out infinite alternate}
+.fr.l{left:-10px}.fr.r{right:-10px;transform:scaleX(-1);animation-delay:-3s}
+.fr path.s{stroke:#2E9B6A;stroke-width:4;fill:none}.fr ellipse{fill:#1F6B4A}.fr g:nth-child(odd) ellipse{fill:#2A8A5E}
+.in{position:relative;z-index:2;min-width:0}
+h1.big{font-size:clamp(1.5rem,8vw,7rem);font-weight:800;letter-spacing:-.02em;white-space:nowrap}
+h1.big span{display:inline-block;animation:up .9s cubic-bezier(.2,.9,.2,1) both;animation-delay:calc(.9s + var(--i)*.05s)}
+.tag{margin:1rem auto 2rem;max-width:30ch;color:#DDE8C4;animation:fade 1s 2.2s both}
+.btn{display:inline-block;background:var(--mango);color:var(--mango-ink);font-weight:600;padding:.9rem 1.6rem;border-radius:999px;text-decoration:none;transition:transform .2s,box-shadow .2s;animation:fade 1s 2.4s both}
+.btn:hover{transform:translateY(-3px);box-shadow:0 8px 0 #B96F00}
+.btn.still{animation:none}
+.btn:focus-visible,a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--mango);outline-offset:3px}
+section.w{max-width:960px;margin:0 auto;padding-block:5rem;padding-left:var(--gl);padding-right:var(--gr)}
+h2{font-size:clamp(2rem,6vw,3.2rem);margin-bottom:1.5rem}
+.intro{max-width:60ch;color:var(--muted);font-size:1.15rem;margin:0 0 1rem}
+.grid{display:grid;gap:1.25rem;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));margin-top:1.5rem}
+.grid>div{background:var(--card);padding:1.5rem;border-radius:1.5rem 1.5rem 1.5rem .4rem;min-width:0}
+.grid>div:nth-child(2){border-radius:.4rem 1.5rem 1.5rem 1.5rem}
+h3{font-size:1.4rem;margin-bottom:.8rem;color:var(--accent-text)}
+.sem{background:var(--card);border-radius:1.5rem 1.5rem 1.5rem .4rem;padding:1.5rem;margin-top:1.5rem;max-width:560px}
+.sem li{display:grid;grid-template-columns:7rem 1fr;gap:.8rem;align-items:baseline;border-radius:.6rem;padding-left:.6rem;padding-right:.6rem}
+.sem li>*{min-width:0}
+.sem li b{font-family:"Bricolage Grotesque",Georgia,sans-serif}
+.sem li.today{background-image:none;background-color:var(--mango);color:var(--mango-ink);border-bottom-color:transparent}
+.sem li.today .pill{color:var(--mango-ink)}
+.row.wk{grid-template-columns:7rem 1fr}
+.row.wk label{margin:0}
+.opts{border:0;margin:.5rem 0 0;padding:0;min-width:0;display:flex;flex-wrap:wrap;gap:.5rem}
+.opts legend{font-size:.85rem;font-weight:600;color:var(--muted);padding:0;margin-bottom:.4rem}
+.opts label{position:relative;margin:0;font-weight:600;cursor:pointer}
+.opts input{position:absolute;opacity:0;width:1px;height:1px;padding:0;border:0}
+.opts label span{display:inline-block;padding:.35rem .9rem;border:2px solid var(--line);border-radius:999px;font-size:.95rem}
+.opts input:checked+span{background:var(--leaf);border-color:var(--leaf);color:#fff}
+.opts input:focus-visible+span{outline:3px solid var(--mango);outline-offset:2px}
+.cnote{flex-basis:100%;font-size:.85rem;color:var(--muted);margin:.2rem 0 0}
+.sem li.today .opts legend,.sem li.today .cnote{color:var(--mango-ink)}
+.sem li.today .opts label span{border-color:rgba(27,19,0,.45)}
+.cta{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap}
+.btn.ghost{background:transparent;color:var(--on-night);border:2px solid var(--on-night)}
+.btn.ghost:hover{box-shadow:0 8px 0 rgba(241,245,228,.35)}
+.btn.dis{opacity:.45;cursor:not-allowed}
+.btn.dis:hover{transform:none;box-shadow:none}
+.ordf{display:grid;gap:1.25rem;max-width:640px;margin-top:1.5rem}
+.ordf .box{background:var(--card);border-radius:1.5rem 1.5rem 1.5rem .4rem;padding:1.25rem 1.5rem;min-width:0}
+.ordf .box:nth-child(2){border-radius:.4rem 1.5rem 1.5rem 1.5rem}
+.line{display:grid;grid-template-columns:1fr auto;gap:.8rem;align-items:center;padding:.55rem 0;border-bottom:1px solid var(--line)}
+.line>*{min-width:0}
+.qty{display:flex;align-items:center;gap:.5rem}
+.qty button{width:2.5rem;height:2.5rem;border-radius:50%;border:2px solid var(--line);background:none;color:var(--ink);font:600 1.25rem Figtree,sans-serif;cursor:pointer;line-height:1}
+.qty output{min-width:1.6rem;text-align:center;font-weight:600;font-variant-numeric:tabular-nums}
+.sum{white-space:pre-line;margin:.4rem 0 .6rem;font-weight:600;overflow-wrap:anywhere}
+.sem li.today .opts input:checked+span{background:var(--mango-ink);border-color:var(--mango-ink);color:var(--mango)}
+ul{list-style:none;margin:0;padding:0}
+li{padding:.45rem 0;border-bottom:1px solid var(--line);background:linear-gradient(var(--mango),var(--mango)) 0 100%/0 2px no-repeat;transition:background-size .35s}
+li:hover{background-size:100% 2px}
+li.off .nm{text-decoration:line-through;color:var(--muted)}
+.pill{display:inline-block;margin-left:.5rem;padding:.05rem .55rem;border:1px solid currentColor;border-radius:999px;font-size:.78rem;font-weight:600;color:var(--muted);vertical-align:.1em}
+.band{background:var(--night);color:var(--on-night)}
+.band .intro{color:var(--on-night-soft)}
+.jour{background:var(--mango);color:var(--mango-ink);border-radius:2rem 2rem 2rem .5rem;padding:2rem 1.5rem;max-width:560px}
+.jour h2{margin-bottom:.3rem}
+.jour .d{font-weight:600;margin:0 0 1.2rem;text-transform:capitalize}
+.jour li{border-bottom:1px solid rgba(27,19,0,.25);background-image:linear-gradient(#1b1300,#1b1300)}
+.jour li b{font-family:"Bricolage Grotesque",Georgia,sans-serif;margin-right:.5rem}
+.jour .p{margin:1.2rem 0 0;font-weight:600}
+.tj{max-width:560px;margin:1.25rem 0 0;padding:1rem 1.5rem;border-left:6px solid var(--mango);background:var(--card);border-radius:.4rem 1.5rem 1.5rem .4rem}
+.tj b{display:block;font-family:"Bricolage Grotesque",Georgia,sans-serif;font-size:1.2rem;color:var(--accent-text)}
+.foot{max-width:960px;margin:0 auto;padding-block:0 2rem;padding-left:var(--gl);padding-right:var(--gr);font-size:.9rem}
+.foot a{color:var(--muted)}
+.jour li a{color:var(--mango-ink);font-weight:600}
+#grid2 ul{columns:2 260px;column-gap:2rem}
+#grid2 li{break-inside:avoid}
+.dayo{border-bottom:1px solid var(--line);padding-bottom:.5rem}
+.dl{font-weight:600;margin:.8rem 0 .2rem}
+.dh{font-weight:600;margin:.7rem 0 0}
+.sem li.closed div{color:var(--muted);font-weight:600}
+.sem li.today.closed div{color:var(--mango-ink)}
+.dayo .line{padding-left:.6rem}
+.dayo .line{border-bottom:0}
+.stabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:8;display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;background:var(--night);padding-top:.6rem;padding-bottom:.6rem}
+.stabs a{min-height:44px;display:inline-flex;align-items:center;padding:.4rem 1.1rem;border:2px solid rgba(241,245,228,.4);border-radius:999px;color:var(--on-night);font-weight:600;text-decoration:none}
+.stabs a[aria-current="page"]{background:var(--mango);border-color:var(--mango);color:var(--mango-ink)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--night)}
+#jour,#carte,#boissons,#contact{scroll-margin-top:5rem}
+.locb{display:flex;gap:.8rem;flex-wrap:wrap;margin:.4rem 0 1.4rem}
+.btn.alt{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.fab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:max(16px,calc(env(safe-area-inset-bottom,0px) + 8px));z-index:40;padding:.85rem 1.3rem;border-radius:999px;background:var(--mango);color:var(--mango-ink);font-weight:700;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.3)}
+.fab[hidden]{display:none}
+@media(max-width:899px){#site{padding-bottom:5.5rem}}
+@media(min-width:900px){.fab{display:none}}
+.total{font-weight:800;font-size:1.15rem;margin:.2rem 0 .8rem;padding:.7rem .9rem;border-radius:12px;background:var(--card);border:2px solid var(--leaf)}
+.total[hidden]{display:none}
+/* Administration */
+.top{background:var(--night);color:var(--on-night);padding-block:1.2rem}
+.top h1{font-size:1.5rem}
+.top p{margin:.3rem 0 .6rem;color:var(--on-night-soft);font-size:.9rem}
+.top a{color:var(--mango);font-weight:600;font-size:.95rem}
+.tabs{display:flex;gap:.5rem;overflow-x:auto;padding-top:1rem;padding-bottom:.25rem;max-width:960px;margin:0 auto}
+.tabs button{flex:none;font:600 .95rem Figtree,sans-serif;padding:.6rem 1.1rem;border:2px solid var(--line);border-radius:999px;background:none;color:var(--ink);cursor:pointer}
+.tabs button[aria-selected=true]{background:var(--mango);border-color:var(--mango);color:var(--mango-ink)}
+main.adm{max-width:960px;margin:0 auto;padding-block:1.25rem 7rem}
+main.adm .p{display:none}main.adm .p.on{display:block;animation:in .3s}
+.p h2{font-size:1.6rem;margin-bottom:1rem}
+.two{display:grid;gap:1.5rem;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));align-items:start}
+.two>*{min-width:0}
+label{display:block;font-weight:600;margin:.8rem 0 .25rem}
+input,select{width:100%;font:inherit;padding:.65rem .8rem;border:2px solid var(--line);border-radius:.7rem;background:var(--card);color:var(--ink)}
+.pv{background:var(--mango);color:var(--mango-ink);border-radius:2rem 2rem 2rem .5rem;padding:1.5rem}
+.pv small{font-weight:600}
+.pv h3{font-size:1.7rem;margin:.2rem 0 1rem;color:var(--mango-ink)}
+.pv p{margin:0;padding:.45rem 0;border-bottom:1px solid rgba(27,19,0,.25);overflow-wrap:anywhere}
+.gh{margin:1.2rem 0 .2rem;font-size:1.1rem}
+.row{display:grid;grid-template-columns:1fr auto;gap:.8rem;align-items:center;padding:.7rem 0;border-bottom:1px solid var(--line)}
+.row>*{min-width:0}
+.row select{width:11rem}
+.note{color:var(--muted);font-size:.9rem}
+.warn{color:var(--accent-text);font-size:.9rem;font-weight:600;min-height:1.4em;margin:.25rem 0 0}
+.lock{max-width:560px;margin:2rem auto;padding-block:1.5rem}
+.bar{position:fixed;left:0;right:0;bottom:0;display:flex;gap:1rem;align-items:center;justify-content:space-between;flex-wrap:wrap;background:var(--night);color:var(--on-night);padding-top:.8rem;padding-bottom:calc(.8rem + env(safe-area-inset-bottom,0px));z-index:5}
+.bar span{font-weight:600}
+.go{font:600 1rem Figtree,sans-serif;background:var(--mango);color:var(--mango-ink);border:0;border-radius:999px;padding:.8rem 1.5rem;cursor:pointer}
+.go:disabled{opacity:.45;cursor:default}
+/* Android : cibles tactiles, clavier, petits écrans */
+button,select,a{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.tabs button{min-height:44px}
+.go{min-height:48px}
+#panel input,#panel select{min-height:48px}
+#panel input{scroll-margin-bottom:7rem}
+.row select{width:min(11rem,45vw)}
+.bar.kb{display:none}
+.ptabs{display:flex;gap:.5rem;flex-wrap:wrap;margin:.2rem 0 .8rem}
+.ptabs button{flex:1 1 9rem;min-height:44px;font:600 .95rem Figtree,sans-serif;padding:.5rem 1rem;border:2px solid var(--line);border-radius:999px;background:none;color:var(--ink);cursor:pointer}
+.ptabs button[aria-pressed=true]{background:var(--leaf);border-color:var(--leaf);color:#fff}
+h2.sub{margin-top:3.5rem}
+.ann{background:var(--mango);color:var(--mango-ink);padding-top:.7rem;padding-bottom:.7rem;text-align:center;font-weight:600;font-size:.95rem;line-height:1.4}
+.ann b{display:block;font-family:"Bricolage Grotesque",Georgia,sans-serif;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase}
+#annt{display:block;white-space:pre-line;overflow-wrap:anywhere}
+.pr{margin-left:.5rem;font-weight:600;color:var(--accent-text);white-space:nowrap}
+.ctl{display:flex;gap:.5rem;align-items:center}
+.ctl input{width:9rem;flex:none}
+.ctl select{min-width:0}
+textarea{width:100%;font:inherit;padding:.65rem .8rem;border:2px solid var(--line);border-radius:.7rem;background:var(--card);color:var(--ink);resize:vertical;min-height:7rem}
+textarea:focus-visible{outline:3px solid var(--mango);outline-offset:3px}
+#panel textarea{scroll-margin-bottom:7rem}
+@media (max-width:400px){.row:not(.wk){grid-template-columns:1fr}.row:not(.wk) select{width:100%}.row.wk{grid-template-columns:5.5rem 1fr}.bar{gap:.5rem}}
+#toast{position:fixed;left:50%;bottom:calc(1.2rem + env(safe-area-inset-bottom,0px));transform:translate(-50%,300%);background:var(--night);color:var(--on-night);padding:.8rem 1.2rem;border-radius:999px;transition:transform .35s;max-width:90vw;text-align:center;z-index:6;border:1px solid var(--line)}
+#toast.up{bottom:calc(5.5rem + env(safe-area-inset-bottom,0px))}
+#toast.on{transform:translate(-50%,0)}
+@keyframes rise{from{transform:translateY(60%)}to{transform:none}}
+@keyframes up{from{opacity:0;transform:translateY(80%) rotate(6deg)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes sway{from{rotate:-4deg}to{rotate:5deg}}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+</style><div id="app"></div><div id="toast" role="status"></div><script type="application/json" id="state">{"annonce":"\n","annonceFin":"2026-11-01","slogan":"L’art de bien manger","hours":"Lundi au samedi, 8h – 18h","maps":"https://maps.app.goo.gl/Ep7KAMTRNExQumr19","livraisonFrais":500,"coords":{"lat":4.730056,"lon":-6.651556,"txt":"4°43'48.2\"N 6°39'05.6\"W"},"whatsapp":"05 86 77 73 50","semaine":[{"day":"Lundi","plat":"Soupe de carpe","choix":["Riz","Attiéké"]},{"day":"Mardi","plat":"Biocosseu poisson ou escargot","choix":["Riz","Foutou"],"choix2":{"label":"Poulet ou escargot au choix","items":["Poulet","Escargot"]}},{"day":"Mercredi","plat":"Poulet sauté","choix":["Riz","Attiéké"]},{"day":"Jeudi","plat":"Foufou","label":"Poisson ou poulet au choix","sans":false,"choix":["Poisson","Poulet"]},{"day":"Vendredi","plat":"Escargot sauté","choix":["Riz","Attiéké"]},{"day":"Samedi","plat":"Biocosseu au poulet ou escargot","choix":["Riz","Foutou"],"choix2":{"label":"Poulet ou escargot au choix","items":["Poulet","Escargot"]}},{"day":"Dimanche","plat":"","closed":true}],"jour":{"entree":"","plat":"","boisson":"","prix":"1500, 2000, 2500, 3000"},"groups":[{"name":"Grillades","items":[{"id":"poisson","name":"Poisson braisé","status":"Sur commande"},{"id":"poulet","name":"Poulet braisé","status":"Sur commande"}]},{"name":"Plats ivoiriens","items":[{"id":"attieke","name":"Attiéké et poisson","status":"Disponible"},{"id":"garba-sans","name":"Garba au thon blanc (sans alloco)","always":true,"status":"Disponible","prix":"1000, 1500, 2000, 2500, 3000"},{"id":"garba","name":"Garba au thon blanc avec alloco","always":true,"status":"Disponible","prix":"1000, 1500, 2000, 2500, 3000"},{"id":"alloco","name":"Alloco","daily":true,"status":"Disponible","prix":"1000, 1500, 2000, 2500, 3000"},{"id":"kedjenou","name":"Kédjenou de poulet","status":"Indisponible"},{"id":"riz","name":"Riz gras","status":"Indisponible"}]},{"name":"Boissons","items":[{"id":"bissap","name":"Bissap","status":"Sur commande"},{"id":"gingembre","name":"Jus de gingembre","status":"Sur commande"},{"id":"corossol","name":"Jus de corossol","status":"Sur commande"},{"id":"tomy","name":"Tomy","status":"Sur commande"},{"id":"eau","name":"Eau","status":"Disponible"},{"id":"youki-pomme","name":"Youki pomme","status":"Disponible"},{"id":"youki-moka","name":"Youki moka café","status":"Disponible"},{"id":"youki-orange","name":"Youki orange","status":"Disponible"},{"id":"youzou","name":"Youzou","status":"Disponible"},{"id":"sprite","name":"Sprite","status":"Disponible"},{"id":"coca","name":"Coca-Cola","status":"Disponible"},{"id":"codys","name":"Cody’s énergie","status":"Disponible"},{"id":"vins","name":"Vins","status":"Disponible","vins":"Asconi merlot\nProbus\nBelle vue"}]},{"name":"Crudités","items":[{"id":"crudites","name":"Plats de crudités","status":"Sur commande"}]}]}</script><script id="app-js">
+(function(){
+"use strict";
+var $=function(i){return document.getElementById(i)};
+function h(t,a,k){var e=document.createElement(t);if(a){for(var n in a){if(n==="class")e.className=a[n];else if(n==="text")e.textContent=a[n];else e.setAttribute(n,a[n])}}(k||[]).forEach(function(c){if(c!=null)e.appendChild(typeof c==="string"?document.createTextNode(c):c)});return e}
+function clone(o){return JSON.parse(JSON.stringify(o))}
+function store(k,v){try{if(v===null)sessionStorage.removeItem(k);else if(v===undefined)return sessionStorage.getItem(k);else sessionStorage.setItem(k,v)}catch(e){}return null}
+
+var HEAD='<title>Espace Palmeraie</title><meta name="claude:viewport-fit-sides" content="cover"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,800&family=Figtree:wght@400;600&display=swap">';
+var RESET=':root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}';
+function buildDoc(st){
+  var S="<"+"script",E="<"+"/script>";
+  var json=JSON.stringify(st).replace(/</g,"\\u003c");
+  return '<!doctype html><html><head><meta charset="utf8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0B2B26"><style>'+RESET+'</style></head><body>'
+    +HEAD+'<style id="app-css">'+$("app-css").textContent+'</style><div id="app"></div><div id="toast" role="status"></div>'
+    +S+' type="application/json" id="state">'+json+E+S+' id="app-js">'+$("app-js").textContent+E+'</body></html>';
+}
+
+var ST=["Disponible","Sur commande","Indisponible"];
+var OS=["Reçue","En préparation","Prête","Livrée"];
+var state={};
+try{state=JSON.parse($("state").textContent)}catch(e){state={}}
+var draft=clone(state);
+var NS=null,isEditor=false,readOnly=false,busy=false;
+
+var SHELL=
+'<div id="site">'
++'<div class="ann gut" id="annonce" hidden role="region" aria-label="Annonces"><b>Annonces</b><span id="annt"></span></div>'
++'<nav class="stabs gut" id="stabs" aria-label="Sections du site"><a id="tabh" href="#" aria-current="page">Accueil</a><a id="tabo" href="#commande" aria-current="false" hidden>Passer ma commande</a></nav>'
++'<div id="home">'
++'<header class="hero gut"><div class="sun"></div><svg class="fr l" id="f1" viewBox="0 -40 340 300" aria-hidden="true"></svg><svg class="fr r" id="f2" viewBox="0 -40 340 300" aria-hidden="true"></svg>'
++'<div class="in"><h1 class="big" id="ttl" aria-label="Espace Palmeraie">Espace Palmeraie</h1><p class="tag" id="tag"></p><div class="cta"><a class="btn" href="#carte">Voir la carte</a><a class="btn ghost" id="goorder" href="#commande" hidden>Passer ma commande</a></div></div></header>'
++'<section class="w" id="jour"><div class="jour"><h2>Menu du jour</h2><p class="d" id="dt"></p><ul id="jl"></ul><p class="p" id="jp"></p></div><p class="tj" id="tj" hidden></p></section>'
++'<section class="w" id="carte"><h2>La carte</h2><p class="intro">Des plats préparés à la commande, braisés au feu et servis avec leurs accompagnements.</p><div class="sem" id="sem" hidden><h3>Plats de la semaine</h3><ul id="sl"></ul></div><h2 class="sub">Les plats</h2><div class="grid" id="grid"></div><h2 class="sub" id="boissons">Les boissons</h2><div class="grid" id="grid2"></div></section>'
++''
++'<section class="w" id="contact"><h2>Nous trouver</h2><p class="intro">Espace Palmeraie, San Pedro, Palmeraie juste avant l’école Jéruel, Côte d’Ivoire.</p><p class="intro" id="gps" hidden></p><div class="locb" id="loc"></div><p class="intro" id="hrs" hidden></p><p class="intro">Paiement : Orange Money et Wave.</p><div id="wa"></div></section>'
++'</div>'
++'<div id="ordview" hidden>'
++'<section class="w" id="commande" hidden><h2>Passer ma commande</h2><p class="intro">Choisissez vos plats, indiquez comment vous voulez être servi, puis envoyez la commande sur WhatsApp. Le restaurant vous confirme par message.</p><div class="ordf" id="ordf"></div></section>'
++'</div>'
++'<a class="fab" id="fab" href="#commande" hidden>Commander</a>'
++'<footer class="foot"></footer>'
++'</div>'
++'<div id="admin" hidden>'
++'<div class="top gut"><h1>Espace Palmeraie · Administration</h1><p>Vos changements apparaissent sur le site quand vous cliquez sur « Publier sur le site ».</p><a href="#">Voir le site</a></div>'
++'<div class="lock gut" id="lock" hidden><h2>Espace réservé au gérant</h2><p class="note">Ouvrez cette page depuis votre compte Claude pour modifier le menu, la carte et les infos du restaurant.</p><p><a href="#">Retour au site</a></p></div>'
++'<div id="panel" hidden>'
++'<div class="tabs gut" role="tablist" id="tb"><button role="tab" aria-selected="true" data-p="a">Menu du jour</button><button role="tab" aria-selected="false" data-p="b">Carte</button><button role="tab" aria-selected="false" data-p="c">Commandes</button><button role="tab" aria-selected="false" data-p="d">Infos</button><button role="tab" aria-selected="false" data-p="e">Annonces</button></div>'
++'<main class="adm gut">'
++'<section class="p on" id="a"><h2>Menu du jour</h2><div class="two"><div>'
++'<label for="i1">Entrée</label><input id="i1" autocomplete="off" placeholder="Vide : pas d’entrée aujourd’hui"><label for="i2">Plat (vide : plat du jour de la semaine)</label><input id="i2" autocomplete="off" placeholder="Suit le plat de la semaine"><label for="i3">Boisson</label><input id="i3" autocomplete="off" placeholder="Vide : lien vers les boissons">'
++'<label for="i4">Prix de la formule (FCFA)</label><input id="i4" placeholder="ex. 3000, ou plusieurs prix : 2000, 2500, 3000" autocomplete="off"></div>'
++'<div class="pv" aria-live="polite"><small>Ce que verra le client</small><h3>Menu du jour</h3><p id="v1"></p><p id="v2"></p><p id="v3"></p><p id="v4"></p></div></div></section>'
++'<section class="p" id="b"><h2>Carte</h2><p class="note">Choisissez l’état de chaque plat. Il s’affiche tel quel sur le site après publication. Indiquez le prix en FCFA (facultatif). Pour plusieurs prix, séparez-les par une virgule, par exemple 2500, 3500, 5000.</p><h3 class="gh">Plats de la semaine</h3><div id="wk"></div><div id="menu"></div></section>'
++'<section class="p" id="c"><h2>Commandes</h2><p class="note">Exemples de commandes reçues par WhatsApp. Elles ne sont pas encore reliées au site.</p><div id="ord"></div></section>'
++'<section class="p" id="d"><h2>Infos du restaurant</h2>'
++'<label for="h1">Horaires</label><input id="h1" placeholder="ex. Lundi au samedi, 11h – 21h" autocomplete="off">'
++'<label for="w1">Numéro WhatsApp</label><input id="w1" type="tel" inputmode="tel" placeholder="ex. 07 00 00 00 00" autocomplete="off"><p class="warn" id="wn" aria-live="polite"></p>'
++'<label for="s1">Slogan</label><input id="s1" autocomplete="off"></section>'
++'<section class="p" id="e"><h2>Annonces</h2><p class="note">Ces informations s’affichent dans une bande tout en haut du site, avant « Espace Palmeraie ». Écrivez une annonce par ligne (fermeture, plat épuisé, promotion…). Laissez vide pour ne rien afficher.</p><label for="a1">Annonces pour les clients</label><textarea id="a1" rows="5" maxlength="500" placeholder="ex. Fermé exceptionnellement lundi"></textarea><label for="a2">Afficher jusqu’au (inclus)</label><input id="a2" type="date"><p class="note">Après cette date, l’annonce disparaît toute seule. Laissez vide pour l’afficher jusqu’à ce que vous l’effaciez.</p></section>'
++'</main>'
++'<div class="bar gut" id="bar"><span id="bst"></span><button class="go" id="pub" type="button">Publier sur le site</button></div>'
++'</div></div>';
+$("app").innerHTML=SHELL;
+
+function toast(m){var t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(toast.k);toast.k=setTimeout(function(){t.classList.remove("on")},3200)}
+function waNum(v){var d=(v||"").replace(/\D/g,"");if(!d)return"";if(d.length===10)return"225"+d;return d}
+function prices(p){return (p||"").split(/[,;\/]+/).map(function(x){return x.replace(/\D/g,"")}).filter(Boolean).map(Number)}
+function jItem(){return{id:"_jour",prix:(state.jour||{}).prix}}
+function itemPrices(it){return prices(it.prix)}
+function priceList(p){var a=prices(p);if(!a.length)return"";return a.map(function(n){return n.toLocaleString("fr-FR")}).join(" · ")+" FCFA"}
+function chosenPrice(it){return psel[it.id]||itemPrices(it)[0]}
+function pricePick(it){var a=itemPrices(it);if(a.length<2)return null;
+  var fs=h("fieldset",{class:"opts"},[h("legend",{text:"Choisissez le prix"})]);
+  a.forEach(function(p){var r=h("input",{type:"radio",name:"pp-"+it.id,value:String(p)});r.checked=chosenPrice(it)===p;
+    r.addEventListener("change",function(){psel[it.id]=p;updateOrder()});
+    fs.appendChild(h("label",null,[r,h("span",{text:p.toLocaleString("fr-FR")+" FCFA"})]))});
+  return fs}
+function priceTxt(p){var a=prices(p);if(!a.length)return"";return (a.length>1?"à partir de ":"")+Math.min.apply(null,a).toLocaleString("fr-FR")+" FCFA"}
+function wineList(it){return (it.vins||"").split(/[\n,;]+/).map(function(x){return x.trim()}).filter(Boolean)}
+function wineMissing(){var m=false;(state.groups||[]).forEach(function(g){g.items.forEach(function(it){if(wineList(it).length&&cart[it.id]>0&&!wsel[it.id])m=true})});return m}
+function winePick(it){var a=wineList(it);if(!a.length)return null;
+  var fs=h("fieldset",{class:"opts"},[h("legend",{text:"Choisissez votre vin"})]);
+  a.forEach(function(w){var r=h("input",{type:"radio",name:"vin-"+it.id,value:w});r.checked=wsel[it.id]===w;r.addEventListener("change",function(){wsel[it.id]=w;updateOrder()});fs.appendChild(h("label",null,[r,h("span",{text:w})]))});
+  return fs}
+function fmtPrice(p){var d=(p||"").replace(/\D/g,"");if(!d)return"";return Number(d).toLocaleString("fr-FR")+" FCFA"}
+
+/* Décor du hero */
+(function(){
+  var t=$("ttl"),s="Espace Palmeraie";t.textContent="";
+  for(var i=0;i<s.length;i++){var e=document.createElement("span");e.style.setProperty("--i",i);e.textContent=s[i]===" "?" ":s[i];t.appendChild(e)}
+  function frond(el){
+    var g='<path class="s" d="M0 0Q140 40 300 180"/>',n=15;
+    for(var i=1;i<=n;i++){var u=i/(n+1),x=2*(1-u)*u*140+u*u*300,y=2*(1-u)*u*40+u*u*180,
+      dx=2*(1-u)*140+2*u*160,dy=2*(1-u)*40+2*u*140,a=Math.atan2(dy,dx)*180/Math.PI,L=90*(1-u*.65);
+      g+='<g transform="translate('+x.toFixed(1)+' '+y.toFixed(1)+')"><ellipse cx="'+(L/2)+'" cy="0" rx="'+(L/2)+'" ry="7" transform="rotate('+(a-62)+')"/><ellipse cx="'+(L/2)+'" cy="0" rx="'+(L/2)+'" ry="7" transform="rotate('+(a+62)+')"/></g>'}
+    el.innerHTML=g}
+  frond($("f1"));frond($("f2"));
+})();
+
+function todayIdx(){return (new Date().getDay()+6)%7}
+function todayISO(){var d=new Date();return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2)}
+function annExpired(f){return !!f&&todayISO()>f}
+function todayPlat(s){var d=(s.semaine||[])[todayIdx()];return d&&d.plat?d.plat:""}
+var picks={};
+function waLink(){
+  var n=waNum(state.whatsapp);if(!n)return"";
+  var msg="Bonjour Espace Palmeraie, je voudrais commander : ",extra=[];
+  (state.semaine||[]).forEach(function(d,i){var w=[];if(picks[i]&&picks[i]!=="Aucun")w.push(picks[i].toLowerCase());if(picks[i+"b"])w.push(picks[i+"b"].toLowerCase());if(w.length)extra.push(d.plat.toLowerCase()+" ("+d.day.toLowerCase()+") avec "+w.join(" et "))});
+  if(extra.length)msg+=extra.join(", ")+". ";
+  return "https://wa.me/"+n+"?text="+encodeURIComponent(msg)}
+function updateWa(){var a=$("wa").querySelector("a");if(a)a.href=waLink();updateOrder()}
+function chooser(d,i){
+  if(!d.choix||!d.choix.length)return null;
+  var fs=h("fieldset",{class:"opts"},[h("legend",{text:d.label||"Accompagnement au choix"})]);
+  d.choix.concat(d.sans===false?[]:["Aucun"]).forEach(function(c){
+    var inp=h("input",{type:"radio",name:"ch"+i,value:c});
+    if(c==="Aucun")inp.checked=true;
+    inp.addEventListener("change",function(){picks[i]=c;updateWa()});
+    fs.appendChild(h("label",null,[inp,h("span",{text:c==="Aucun"?"Sans accompagnement":c})]))});
+  if(waNum(state.whatsapp))fs.appendChild(h("p",{class:"cnote",text:"Votre choix est ajouté à votre message WhatsApp."}));
+  return fs}
+function chooser2(d,i){
+  var c2=d.choix2;if(!c2)return null;
+  var fs=h("fieldset",{class:"opts"},[h("legend",{text:c2.label})]);
+  c2.items.forEach(function(c){
+    var inp=h("input",{type:"radio",name:"cx"+i,value:c});
+    inp.addEventListener("change",function(){picks[i+"b"]=c;updateWa()});
+    fs.appendChild(h("label",null,[inp,h("span",{text:c})]))});
+  return fs}
+var wsel={},psel={},cart={},mode="Sur place",pay="",oname="",oaddr="",ophone="",onote="";
+function platDuJour(){var j=state.jour||{};return j.plat&&j.plat.trim()?j.plat:todayPlat(state)}
+function isClosed(i){var d=(state.semaine||[])[i];return !!(d&&d.closed&&!(d.plat&&d.plat.trim()))}
+function nextOpenDay(){var sem=state.semaine||[],ti=todayIdx();for(var k=1;k<=7;k++){var i=(ti+k)%7;if(sem[i]&&!isClosed(i))return sem[i].day.toLowerCase()}return"bientôt"}
+function variants(d){var A=d.choix2&&d.choix2.items&&d.choix2.items.length?d.choix2.items:[null],B=d.choix&&d.choix.length?d.choix.concat(d.sans===false?[]:["Aucun"]):[null],out=[];A.forEach(function(a){B.forEach(function(b){out.push({a:a,b:b,key:a+"|"+b})})});return out}
+function vDetail(v){return [v.a?v.a.toLowerCase():null,v.b?(v.b==="Aucun"?"sans accompagnement":"avec "+v.b.toLowerCase()):null].filter(Boolean).join(", ")}
+function vLabel(v,p){var t=[v.a,v.b?(v.b==="Aucun"?"sans accompagnement":"avec "+v.b.toLowerCase()):null].filter(Boolean).join(" · ");return t?t.charAt(0).toUpperCase()+t.slice(1):p}
+function dayPlat(i){var d=(state.semaine||[])[i];if(!d)return"";var p=i===todayIdx()?platDuJour():(d.plat||"");return (p||"").trim()}
+function choixOf(i){var w=[];if(picks[i]&&picks[i]!=="Aucun")w.push(picks[i].toLowerCase());if(picks[i+"b"])w.push(picks[i+"b"].toLowerCase());return w.length?" (avec "+w.join(" et ")+")":""}
+function dayMissingAny(){var r="";(state.semaine||[]).forEach(function(d,i){if(r||!(cart["_d"+i]>0))return;var j=" pour le "+d.day.toLowerCase()+".";if(d.choix&&d.sans===false&&!picks[i])r="Choisissez "+(d.label||"votre choix").toLowerCase()+j;else if(d.choix2&&!picks[i+"b"])r="Choisissez "+d.choix2.label.toLowerCase()+j});return r}
+function jourChoix(){var i=todayIdx(),w=[];if(picks[i]&&picks[i]!=="Aucun")w.push(picks[i].toLowerCase());if(picks[i+"b"])w.push(picks[i+"b"].toLowerCase());return w.length?" (avec "+w.join(" et ")+")":""}
+function dayMissing(){
+  var i=todayIdx(),d=(state.semaine||[])[i];if(!d)return"";
+  if(d.choix&&d.sans===false&&!picks[i])return"Choisissez "+(d.label||"votre choix").toLowerCase()+" dans l’onglet « Plat du jour ».";
+  if(d.choix2&&!picks[i+"b"])return"Choisissez "+d.choix2.label.toLowerCase()+" dans l’onglet « Plat du jour ».";
+  return""}
+function fmt(n){return n.toLocaleString("fr-FR")+" FCFA"}
+function orderRows(){
+  var out=[];
+  (state.semaine||[]).forEach(function(d,i){var p=dayPlat(i);if(!p)return;var u=chosenPrice(jItem());variants(d).forEach(function(v){var q=cart["_d"+i+"|"+v.key];if(!(q>0))return;var det=vDetail(v);out.push({q:q,u:u,t:p+" ("+d.day.toLowerCase()+")"+(det?" : "+det:"")})})});
+  (state.groups||[]).forEach(function(g){g.items.forEach(function(it){if(cart[it.id]>0)out.push({q:cart[it.id],u:chosenPrice(it),t:it.name+(wineList(it).length&&wsel[it.id]?" : "+wsel[it.id]:"")})})});
+  return out}
+function orderLines(){return orderRows().map(function(r){return r.q+" × "+r.t+(r.u?" — "+fmt(r.q*r.u)+(r.q>1?" ("+fmt(r.u)+" l’unité)":""):" — prix à confirmer")})}
+function orderCalc(){var rows=orderRows(),t=0,miss=0;rows.forEach(function(r){if(r.u)t+=r.q*r.u;else miss++});return{total:t,missing:miss,count:rows.length}}
+function delFee(){return mode==="Livraison"?(Number(state.livraisonFrais)||0):0}
+function totalLine(){var c=orderCalc();if(!c.count)return"";var f=delFee(),x="";
+  if(f)x="Plats et boissons : "+fmt(c.total)+" + livraison : "+fmt(f)+"\n";
+  x+="Total : "+fmt(c.total+f);if(c.missing)x+=" + "+c.missing+" article"+(c.missing>1?"s":"")+" au prix à confirmer";return x}
+function orderMsg(){
+  var m="Bonjour Espace Palmeraie, je voudrais passer commande :\n"+orderLines().map(function(l){return"- "+l}).join("\n")+"\n"+totalLine()+"\nMode : "+mode;
+  if(mode==="Livraison"&&oaddr.trim())m+=" ("+oaddr.trim()+")";
+  if(mode==="Livraison"&&ophone.trim())m+="\nNuméro de la personne à livrer : "+ophone.trim();
+  if(oname.trim())m+="\nNom : "+oname.trim();
+  if(pay)m+="\nPaiement : "+pay;
+  if(onote.trim())m+="\nRemarque : "+onote.trim();
+  return m}
+function updateOrder(){
+  var s=$("osum");if(!s)return;
+  var lines=orderLines(),miss="";
+  s.textContent=lines.length?lines.join("\n"):"Aucun plat choisi pour le moment.";var tt=$("otot");tt.textContent=totalLine();tt.hidden=!lines.length;
+  if(!lines.length)miss="Ajoutez au moins un plat.";
+  else if(wineMissing())miss="Choisissez le vin souhaité.";
+  else if(!oname.trim())miss="Indiquez votre nom.";
+  else if(mode==="Livraison"&&!oaddr.trim())miss="Indiquez l’adresse de livraison.";
+  else if(mode==="Livraison"&&!ophone.trim())miss="Indiquez le numéro de la personne à livrer.";
+  $("ohint").textContent=miss;
+  var a=$("osend");a.classList.toggle("dis",!!miss);
+  if(miss){a.setAttribute("aria-disabled","true");a.setAttribute("href","#commande")}
+  else{a.removeAttribute("aria-disabled");a.setAttribute("href","https://wa.me/"+waNum(state.whatsapp)+"?text="+encodeURIComponent(orderMsg()))}}
+function qline(key,label,note,aria){
+  var out=h("output",{text:String(cart[key]||0)});
+  var minus=h("button",{type:"button","aria-label":"Retirer "+(aria||label),text:"−"}),plus=h("button",{type:"button","aria-label":"Ajouter "+(aria||label),text:"+"});
+  function set(v){cart[key]=Math.max(0,Math.min(20,v));out.textContent=String(cart[key]);updateOrder()}
+  minus.addEventListener("click",function(){set((cart[key]||0)-1)});
+  plus.addEventListener("click",function(){set((cart[key]||0)+1)});
+  return h("div",{class:"line"},[h("span",null,[label,note?h("span",{class:"pill",text:note}):null]),h("div",{class:"qty"},[minus,out,plus])])}
+function renderOrder(){
+  var n=waNum(state.whatsapp);
+  $("commande").hidden=!n;$("goorder").hidden=!n;$("tabo").hidden=!n;$("fab").hidden=!n||location.hash==="#commande";
+  if(!n)return;
+  var box=$("ordf");box.textContent="";
+  var b1=h("div",{class:"box"},[h("h3",{text:"1. Vos plats"})]),pj=platDuJour();
+  var panels={j:h("div",null),c:h("div",null),b:h("div",null)},tb=h("div",{class:"ptabs",role:"group","aria-label":"Catégorie"}),btns={};
+  function showTab(w){Object.keys(panels).forEach(function(k){panels[k].hidden=k!==w;if(btns[k])btns[k].setAttribute("aria-pressed",String(k===w))})}
+  var jp=pricePick(jItem()),ti=todayIdx(),sem=state.semaine||[],others=[];
+  function dayBlock(i){var d=sem[i],pl=dayPlat(i),wrap=h("div",{class:"dayo"});
+    wrap.appendChild(h("p",{class:"dh"},[d.day+" · "+pl,i===ti?h("span",{class:"pill",text:"aujourd’hui"}):null]));
+    variants(d).forEach(function(v){wrap.appendChild(qline("_d"+i+"|"+v.key,vLabel(v,pl),"",d.day+" "+pl+" "+vLabel(v,"")))});
+    return wrap}
+  if(dayPlat(ti)){panels.j.appendChild(h("p",{class:"dl",text:"Plat d’aujourd’hui"}));panels.j.appendChild(dayBlock(ti));if(jp)panels.j.appendChild(jp)}
+  else panels.j.appendChild(h("p",{class:"dl",text:isClosed(ti)?"Fermé aujourd’hui. Réouverture "+nextOpenDay()+".":"Pas de plat du jour pour le moment."}));
+  if(!isClosed(ti)){var ex=[];(state.groups||[]).forEach(function(g){g.items.forEach(function(it){if((it.always||it.daily)&&it.status!=="Indisponible")ex.push(it)})});if(ex.length){panels.j.appendChild(h("p",{class:"dl",text:"Toujours disponible"}));ex.forEach(function(it){panels.j.appendChild(qline(it.id,it.name,it.status==="Sur commande"?"sur commande":""));var pp=pricePick(it);if(pp)panels.j.appendChild(pp)})}}
+  (state.groups||[]).forEach(function(g){var k=g.name==="Boissons"?"b":"c";g.items.forEach(function(it){if(it.status==="Indisponible"||it.always||it.daily)return;panels[k].appendChild(qline(it.id,it.name,it.status==="Sur commande"?"sur commande":""));var pp=pricePick(it);if(pp)panels[k].appendChild(pp);var wp=winePick(it);if(wp)panels[k].appendChild(wp)})});
+  [["j","Plats du jour"],["c","Plats"],["b","Boissons"]].forEach(function(t){if(!panels[t[0]].children.length)return;var b=h("button",{type:"button",text:t[1]});b.addEventListener("click",function(){showTab(t[0])});btns[t[0]]=b;tb.appendChild(b)});
+  b1.appendChild(tb);["j","c","b"].forEach(function(k){b1.appendChild(panels[k])});showTab(btns.j?"j":btns.c?"c":"b");
+  var b2=h("div",{class:"box"},[h("h3",{text:"2. Vos informations"})]);
+  var ia=h("input",{id:"oa",autocomplete:"street-address",placeholder:"Quartier, repère"});
+  var ip=h("input",{id:"op",type:"tel",inputmode:"tel",autocomplete:"tel",placeholder:"ex. 07 00 00 00 00"});
+  var addr=h("div",{hidden:""},[h("label",{for:"oa",text:"Adresse de livraison"}),ia,h("label",{for:"op",text:"Numéro de la personne à livrer"}),ip]);
+  var fs=h("fieldset",{class:"opts"},[h("legend",{text:"Mode de service"})]);
+  ["Sur place","À emporter","Livraison"].forEach(function(m){
+    var r=h("input",{type:"radio",name:"mode",value:m});r.checked=m===mode;
+    r.addEventListener("change",function(){mode=m;addr.hidden=m!=="Livraison";updateOrder()});
+    fs.appendChild(h("label",null,[r,h("span",{text:m})]))});
+  var inm=h("input",{id:"on",autocomplete:"name",placeholder:"Votre nom"}),inn=h("input",{id:"ot",placeholder:"ex. sans piment (facultatif)"});
+  inm.addEventListener("input",function(){oname=inm.value;updateOrder()});
+  ia.addEventListener("input",function(){oaddr=ia.value;updateOrder()});
+  ip.addEventListener("input",function(){ophone=ip.value;updateOrder()});
+  inn.addEventListener("input",function(){onote=inn.value;updateOrder()});
+  b2.appendChild(fs);
+  var pf=h("fieldset",{class:"opts"},[h("legend",{text:"Moyen de paiement"})]);
+  ["Orange Money","Wave"].forEach(function(m){var r=h("input",{type:"radio",name:"pay",value:m});r.addEventListener("change",function(){pay=m;updateOrder()});pf.appendChild(h("label",null,[r,h("span",{text:m})]))});
+  b2.appendChild(pf);b2.appendChild(h("label",{for:"on",text:"Nom"}));b2.appendChild(inm);b2.appendChild(addr);b2.appendChild(h("label",{for:"ot",text:"Remarque"}));b2.appendChild(inn);
+  var send=h("a",{class:"btn still",id:"osend",href:"#commande",text:"Envoyer ma commande sur WhatsApp"});
+  send.addEventListener("click",function(e){if(send.getAttribute("aria-disabled")==="true")e.preventDefault()});
+  var b3=h("div",{class:"box"},[h("h3",{text:"3. Envoyer"}),h("p",{class:"sum",id:"osum"}),h("p",{class:"total",id:"otot","aria-live":"polite",hidden:"hidden"}),h("p",{class:"warn",id:"ohint","aria-live":"polite"}),send]);
+  box.appendChild(b1);box.appendChild(b2);box.appendChild(b3);
+  updateOrder()}
+/* Site public : toujours dessiné depuis l'état publié */
+function renderSite(){
+  var j=state.jour||{};
+  $("tag").textContent=state.slogan||"";
+  var an=(state.annonce||"").trim();if(an&&annExpired(state.annonceFin))an="";$("annt").textContent=an;$("annonce").hidden=!an;
+  try{$("dt").textContent=new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"})}catch(e){}
+  var jl=$("jl");jl.textContent="";
+  [["Entrée",j.entree],["Plat",j.plat&&j.plat.trim()?j.plat:todayPlat(state)],["Boisson",j.boisson]].forEach(function(r){
+    if(r[1]&&r[1].trim())jl.appendChild(h("li",null,[h("b",{text:r[0]}),r[1]]))});
+  if(!jl.children.length)jl.appendChild(h("li",{text:isClosed(todayIdx())?"Fermé aujourd’hui. Réouverture "+nextOpenDay()+".":"Le menu du jour sera bientôt publié."}));else if(!(j.boisson&&j.boisson.trim()))jl.appendChild(h("li",null,[h("b",{text:"Boisson"}),h("a",{href:"#boissons",text:"Voir les boissons"})]));
+  var pr=priceList(j.prix);$("jp").textContent=pr?"Prix de la formule : "+pr:"";$("jp").hidden=!pr;
+  var grid=$("grid"),grid2=$("grid2");grid.textContent="";grid2.textContent="";var always=null,alw=[];
+  (state.groups||[]).forEach(function(g){
+    var ul=h("ul");
+    g.items.forEach(function(it){
+      if(it.always){always=it;alw.push(it)}
+      var li=h("li",{class:it.status==="Indisponible"?"off":""},[h("span",{class:"nm",text:it.name})]);
+      var ps=prices(it.prix),nf=function(n){return n.toLocaleString("fr-FR")};
+      if(ps.length)li.appendChild(h("span",{class:"pr",text:(ps.length>1?"à partir de ":"")+nf(Math.min.apply(null,ps))+" FCFA"}));
+      if(it.status!=="Disponible")li.appendChild(h("span",{class:"pill",text:it.status==="Sur commande"?"sur commande":"indisponible"}));else if((it.always||it.daily)&&isClosed(todayIdx()))li.appendChild(h("span",{class:"pill",text:"fermé aujourd’hui"}));
+      if(ps.length>1)li.appendChild(h("div",{class:"note",text:ps.map(nf).join(" · ")+" FCFA"}));
+      var vl=wineList(it);if(vl.length)li.appendChild(h("div",{class:"note",text:"Vins disponibles : "+vl.join(" · ")}));
+      ul.appendChild(li)});
+    var isB=g.name==="Boissons";(isB?grid2:grid).appendChild(h("div",null,isB?[ul]:[h("h3",{text:g.name}),ul]))});
+  var sl=$("sl"),any=false;sl.textContent="";
+  (state.semaine||[]).forEach(function(d,i){
+    var has=d.plat&&d.plat.trim(),t=i===todayIdx();
+    if(!has&&!isClosed(i))return;if(has)any=true;
+    sl.appendChild(h("li",{class:(t?"today":"")+(has?"":" closed")},[h("b",{text:d.day}),h("div",null,[has?d.plat:"Fermé",t?h("span",{class:"pill",text:"aujourd’hui"}):null])]))});
+  $("sem").hidden=!any;
+  var tj=$("tj");
+  if(always){var cl=isClosed(todayIdx()),nm=alw.map(function(x){return x.short||x.name}).join(" · ");if(cl)nm+=" · de retour "+nextOpenDay();tj.textContent="";tj.appendChild(h("b",{text:cl?"Fermé aujourd’hui":always.status==="Disponible"?"Disponible à tout moment":always.status==="Sur commande"?"Sur commande":"Indisponible pour le moment"}));tj.appendChild(document.createTextNode(nm));tj.hidden=false}else tj.hidden=true;
+  var cc=state.coords,loc=$("loc"),gp=$("gps");loc.textContent="";
+  if(cc&&isFinite(cc.lat)&&isFinite(cc.lon)){var q=cc.lat+","+cc.lon;gp.textContent="Coordonnées GPS : "+(cc.txt||q);gp.hidden=false}else gp.hidden=true;
+  if(state.maps)loc.appendChild(h("a",{class:"btn still",href:state.maps,target:"_blank",rel:"noopener",text:"Voir sur Google Maps · Itinéraire"}));
+  var hr=$("hrs");hr.textContent=state.hours?"Horaires : "+state.hours:"";hr.hidden=!state.hours;
+  var wa=$("wa");wa.textContent="";var n=waNum(state.whatsapp);
+  if(n)wa.appendChild(h("a",{class:"btn still",href:waLink(),text:"Commander sur WhatsApp"}));
+  renderOrder();
+}
+
+/* Administration : on travaille sur une copie (draft) */
+function dirty(){return JSON.stringify(draft)!==JSON.stringify(state)}
+function updateBar(){
+  var d=dirty();
+  $("bst").textContent=readOnly?"Lecture seule : vous ne pouvez pas publier.":d?"Modifications non publiées":"Le site est à jour";
+  $("pub").disabled=!d||readOnly||busy;
+}
+function pv(){
+  var j=draft.jour;
+  $("v1").textContent="Entrée : "+(j.entree||"—");$("v2").textContent="Plat : "+((j.plat&&j.plat.trim()?j.plat:todayPlat(draft))||"—");$("v3").textContent="Boisson : "+(j.boisson||"voir les boissons");
+  $("v4").textContent=priceList(j.prix)?"Formule : "+priceList(j.prix):"Prix à indiquer";
+}
+function waHint(){
+  var raw=draft.whatsapp||"",n=waNum(raw),m="";
+  if(raw.trim()&&n.length<10)m="Numéro incomplet : saisissez les 10 chiffres.";
+  else if(!raw.trim())m="Sans numéro, le bouton WhatsApp reste masqué sur le site.";
+  $("wn").textContent=m;
+}
+function sync(){pv();waHint();updateBar()}
+function opts(a,v){return a.map(function(o){return"<option"+(o===v?" selected":"")+">"+o+"</option>"}).join("")}
+function buildAdmin(){
+  var f={i1:["jour","entree"],i2:["jour","plat"],i3:["jour","boisson"],i4:["jour","prix"],h1:["hours"],w1:["whatsapp"],s1:["slogan"],a1:["annonce"],a2:["annonceFin"]};
+  Object.keys(f).forEach(function(id){
+    var p=f[id],el=$(id);
+    el.value=p.length===2?(draft[p[0]][p[1]]||""):(draft[p[0]]||"");
+    el.addEventListener("input",function(){
+      if(p.length===2)draft[p[0]][p[1]]=el.value;else draft[p[0]]=el.value;
+      sync()})});
+  var wk=$("wk");
+  draft.semaine.forEach(function(d,i){
+    var id="wk"+i,inp=h("input",{id:id,autocomplete:"off",placeholder:d.closed?"Fermé (écrivez un plat pour ouvrir)":"Pas de plat ce jour"});inp.value=d.plat||"";
+    inp.addEventListener("input",function(){d.plat=inp.value;sync()});
+    wk.appendChild(h("div",{class:"row wk"},[h("label",{for:id,text:d.day}),inp]))});
+  var menu=$("menu");
+  draft.groups.forEach(function(g){
+    menu.appendChild(h("h3",{class:"gh",text:g.name}));
+    g.items.forEach(function(it){
+      var sel=h("select",{id:"st-"+it.id,"aria-label":it.name});sel.innerHTML=opts(ST,it.status);
+      sel.addEventListener("change",function(){it.status=sel.value;sync()});
+      var lab=h("span",{text:it.name});if(it.always)lab.appendChild(h("span",{class:"note",text:" · toujours au menu"}));
+      var pr=h("input",{placeholder:"ex. 2500, 3500",autocomplete:"off","aria-label":"Prix "+it.name});pr.value=it.prix||"";pr.addEventListener("input",function(){it.prix=pr.value;sync()});
+      menu.appendChild(h("div",{class:"row"},[lab,h("div",{class:"ctl"},[pr,sel])]));
+      if(it.id==="vins"){var ta=h("textarea",{id:"vin-list",rows:"4",placeholder:"Un nom de vin par ligne"});ta.value=it.vins||"";ta.addEventListener("input",function(){it.vins=ta.value;sync()});menu.appendChild(h("label",{for:"vin-list",text:"Vins en stock (un nom par ligne)"}));menu.appendChild(ta)}})});
+  var ord=$("ord");
+  [["Commande 1","Attiéké poisson × 2","En préparation"],["Commande 2","Poulet braisé, alloco","Reçue"],["Commande 3","Salade de crudités","Prête"]].forEach(function(o){
+    var sel=h("select",{"aria-label":"État "+o[0]});sel.innerHTML=opts(OS,o[2]);
+    ord.appendChild(h("div",{class:"row"},[h("span",null,[h("b",{text:o[0]}),h("br"),h("span",{class:"note",text:o[1]})]),sel]))});
+  $("tb").addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;openTab(b.dataset.p)});
+  $("pub").addEventListener("click",publish);
+  var pn=$("panel");
+  pn.addEventListener("focusin",function(e){if((e.target.tagName==="INPUT"||e.target.tagName==="TEXTAREA"))$("bar").classList.add("kb")});
+  pn.addEventListener("focusout",function(){$("bar").classList.remove("kb")});
+  openTab(store("pal-tab")||"a");
+  sync();
+}
+function openTab(id){
+  document.querySelectorAll("#tb button").forEach(function(x){x.setAttribute("aria-selected",x.dataset.p===id)});
+  document.querySelectorAll(".p").forEach(function(x){x.classList.toggle("on",x.id===id)});
+  var on=document.querySelector('#tb button[data-p="'+id+'"]');
+  if(on&&on.scrollIntoView)on.scrollIntoView({inline:"center",block:"nearest"});
+  store("pal-tab",id);
+}
+async function publish(){
+  if(!NS){toast("La publication n’est pas disponible ici.");return}
+  if(!dirty())return;
+  busy=true;updateBar();
+  try{
+    store("pal-flag","1");
+    await NS.publish(buildDoc(draft));
+  }catch(err){
+    store("pal-flag",null);busy=false;
+    var c=err&&err.code;
+    if(c==="not_writer"||c==="not_granted"||c==="consent_required"||c==="not_declared"){readOnly=true;toast("Vous n’avez pas le droit de publier cette page.")}
+    else if(c==="conflict"){toast("Le site vient d’être modifié ailleurs. Rechargement…")}
+    else if(c==="rate_limited"){toast("Trop de publications. Patientez un instant.")}
+    else toast("La publication a échoué. Réessayez dans un instant.");
+    updateBar();
+  }
+}
+
+function route(){
+  var hs=location.hash,adm=hs==="#admin",ord=hs==="#commande"&&!!waNum(state.whatsapp);
+  $("site").hidden=adm;$("admin").hidden=!adm;
+  $("home").hidden=ord;$("ordview").hidden=!ord;$("fab").hidden=ord||!waNum(state.whatsapp);
+  $("tabh").setAttribute("aria-current",ord?"false":"page");$("tabo").setAttribute("aria-current",ord?"page":"false");
+  $("lock").hidden=isEditor;$("panel").hidden=!isEditor;
+  $("toast").classList.toggle("up",adm&&isEditor);
+  if(adm||ord||!hs||hs==="#")window.scrollTo(0,0);
+  else{var el=document.getElementById(hs.slice(1));if(el&&$("home").contains(el))el.scrollIntoView()}
+}
+
+renderSite();
+buildAdmin();
+route();
+window.addEventListener("hashchange",route);
+if(store("pal-flag")){store("pal-flag",null);toast("Le site est à jour.")}
+
+if(window.claude&&window.claude.use){
+  window.claude.use("artifact").then(function(a){NS=a;updateBar()}).catch(function(){});
+  window.claude.use("user").then(function(u){return u?u.canEdit():false}).then(function(v){
+    isEditor=!!v;if(isEditor&&!$("manage"))document.querySelector(".foot").appendChild(h("a",{id:"manage",href:"#admin",text:"Gérer le site"}));route()}).catch(function(){});
+}
+})();
+</script>
+</body></html>

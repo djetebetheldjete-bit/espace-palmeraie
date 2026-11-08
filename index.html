@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<meta name="theme-color" content="#0B2B26"><title>Espace Palmeraie</title><meta name="claude:viewport-fit-sides" content="cover"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,800&family=Figtree:wght@400;600&display=swap"><style id="app-css">
+<meta name="theme-color" content="#0B2B26"><title>Espace Palmeraie</title><meta name="claude:viewport-fit-sides" content="cover"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,800&family=Figtree:wght@400;600&display=swap"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style id="app-css">
 /* Une seule page : le site du restaurant, et l'espace du gérant sur #admin qui republie la page avec les nouvelles données. */
 :root{--night:#0B2B26;--leaf:#1F6B4A;--mango:#F4A21D;--bg:#F1F5E4;--ink:#12302A;--card:#E3EBCB;--muted:#4B6358;--line:rgba(31,107,74,.3);--accent-text:#1F6B4A;--on-night:#F1F5E4;--on-night-soft:#C9D8BE;--mango-ink:#1b1300;--gl:max(1.25rem,env(safe-area-inset-left,0px));--gr:max(1.25rem,env(safe-area-inset-right,0px))}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1F1B;--ink:#EAF1DA;--card:#173128;--muted:#A9BDB0;--line:rgba(234,241,218,.25);--accent-text:#F4A21D;color-scheme:dark}}
@@ -187,7 +187,10 @@ var OS=["Reçue","En préparation","Prête","Livrée"];
 var state={};
 try{state=JSON.parse($("state").textContent)}catch(e){state={}}
 var draft=clone(state);
-var NS=null,isEditor=false,readOnly=false,busy=false;
+var NS=null,isEditor=false,readOnly=false,busy=false,session=null;
+var SB_URL="https://ejzhqxiwtsniufzhycar.supabase.co";
+var SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqemhxeGl3dHNuaXVmemh5Y2FyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQxNTUzNTgsImV4cCI6MjEwOTczMTM1OH0.nXWu8YymFfgvrBAphzyabeuFyMJ_Dn2wbb4hlmp6c24";
+var SB=(window.supabase&&window.supabase.createClient)?window.supabase.createClient(SB_URL,SB_KEY):null;
 
 var SHELL=
 '<div id="site">'
@@ -208,8 +211,8 @@ var SHELL=
 +'<footer class="foot"></footer>'
 +'</div>'
 +'<div id="admin" hidden>'
-+'<div class="top gut"><h1>Espace Palmeraie · Administration</h1><p>Vos changements apparaissent sur le site quand vous cliquez sur « Publier sur le site ».</p><a href="#">Voir le site</a></div>'
-+'<div class="lock gut" id="lock" hidden><h2>Espace réservé au gérant</h2><p class="note">Ouvrez cette page depuis votre compte Claude pour modifier le menu, la carte et les infos du restaurant.</p><p><a href="#">Retour au site</a></p></div>'
++'<div class="top gut"><h1>Espace Palmeraie · Administration</h1><p>Vos changements apparaissent sur le site dès que vous cliquez sur « Publier sur le site ».</p><a href="#">Voir le site</a> <a href="#" id="logout" hidden>· Se déconnecter</a></div>'
++'<div class="lock gut" id="lock" hidden><h2>Espace gérant</h2><p class="note" id="lockmsg">Connectez-vous pour modifier le menu, la carte et les infos du restaurant.</p><div id="loginbox"><label for="lemail">E-mail</label><input id="lemail" type="email" autocomplete="username" inputmode="email" placeholder="adresse e-mail partagée"><label for="lpass">Mot de passe</label><input id="lpass" type="password" autocomplete="current-password" placeholder="mot de passe"><p class="warn" id="loginwarn" aria-live="polite"></p><div class="cta" style="justify-content:flex-start;margin-top:.4rem"><button class="go" id="btnlogin" type="button">Se connecter</button><button class="btn alt still" id="btnsignup" type="button">Créer l’accès</button></div></div><p style="margin-top:1.2rem"><a href="#">← Retour au site</a></p></div>'
 +'<div id="panel" hidden>'
 +'<div class="tabs gut" role="tablist" id="tb"><button role="tab" aria-selected="true" data-p="a">Menu du jour</button><button role="tab" aria-selected="false" data-p="b">Carte</button><button role="tab" aria-selected="false" data-p="c">Commandes</button><button role="tab" aria-selected="false" data-p="d">Infos</button><button role="tab" aria-selected="false" data-p="e">Annonces</button></div>'
 +'<main class="adm gut">'
@@ -496,20 +499,20 @@ function openTab(id){
   store("pal-tab",id);
 }
 async function publish(){
-  if(!NS){toast("La publication n’est pas disponible ici.");return}
+  if(!SB){toast("Base de données indisponible.");return}
+  if(!isEditor){toast("Connectez-vous pour publier.");return}
   if(!dirty())return;
   busy=true;updateBar();
   try{
-    store("pal-flag","1");
-    await NS.publish(buildDoc(draft));
+    var payload={data:draft,updated_at:new Date().toISOString()};
+    if(session&&session.user)payload.updated_by=session.user.id;
+    var r=await SB.from("site_config").update(payload).eq("id",1).select("id");
+    if(r.error)throw r.error;
+    if(!r.data||!r.data.length)throw new Error("Modification refusée (droits).");
+    state=clone(draft);renderSite();busy=false;updateBar();toast("Site mis à jour ✅");
   }catch(err){
-    store("pal-flag",null);busy=false;
-    var c=err&&err.code;
-    if(c==="not_writer"||c==="not_granted"||c==="consent_required"||c==="not_declared"){readOnly=true;toast("Vous n’avez pas le droit de publier cette page.")}
-    else if(c==="conflict"){toast("Le site vient d’être modifié ailleurs. Rechargement…")}
-    else if(c==="rate_limited"){toast("Trop de publications. Patientez un instant.")}
-    else toast("La publication a échoué. Réessayez dans un instant.");
-    updateBar();
+    busy=false;updateBar();
+    toast("Échec de la publication : "+((err&&err.message)||"réessayez."));
   }
 }
 
@@ -524,17 +527,78 @@ function route(){
   else{var el=document.getElementById(hs.slice(1));if(el&&$("home").contains(el))el.scrollIntoView()}
 }
 
-renderSite();
-buildAdmin();
-route();
-window.addEventListener("hashchange",route);
-if(store("pal-flag")){store("pal-flag",null);toast("Le site est à jour.")}
-
-if(window.claude&&window.claude.use){
-  window.claude.use("artifact").then(function(a){NS=a;updateBar()}).catch(function(){});
-  window.claude.use("user").then(function(u){return u?u.canEdit():false}).then(function(v){
-    isEditor=!!v;if(isEditor&&!$("manage"))document.querySelector(".foot").appendChild(h("a",{id:"manage",href:"#admin",text:"Gérer le site"}));route()}).catch(function(){});
+function setChrome(){
+  var lb=$("loginbox"),lm=$("lockmsg"),lo=$("logout");
+  if(!lb||!lm||!lo)return;
+  if(session){
+    lo.hidden=false;lb.hidden=true;
+    lm.textContent=isEditor?"Vous êtes connecté. Modifiez puis cliquez « Publier sur le site »."
+      :"Compte connecté, mais pas encore autorisé à gérer le site. Contactez le responsable du restaurant.";
+  }else{
+    lo.hidden=true;lb.hidden=false;
+    lm.textContent="Connectez-vous pour modifier le menu, la carte et les infos du restaurant.";
+  }
 }
+function trad(err){
+  var m=(err&&err.message)||"Erreur.";
+  if(/Invalid login/i.test(m))return"E-mail ou mot de passe incorrect.";
+  if(/Email not confirmed/i.test(m))return"E-mail pas encore confirmé : ouvrez l’e-mail de confirmation, puis réessayez.";
+  if(/already registered|already been registered/i.test(m))return"Ce compte existe déjà : utilisez « Se connecter ».";
+  if(/at least 6|password should be/i.test(m))return"Mot de passe d’au moins 6 caractères.";
+  return m;
+}
+async function checkAdmin(){
+  try{var r=await SB.from("admins").select("user_id").maybeSingle();return !!(r&&r.data)}catch(e){return false}
+}
+async function refreshAuth(){
+  isEditor=false;session=null;
+  if(SB){
+    try{var s=await SB.auth.getSession();session=(s&&s.data&&s.data.session)||null}catch(e){}
+    if(session)isEditor=await checkAdmin();
+  }
+  setChrome();updateBar();route();
+}
+async function loadConfig(){
+  if(!SB)return;
+  try{var r=await SB.from("site_config").select("data").eq("id",1).maybeSingle();
+    if(r&&r.data&&r.data.data){state=r.data.data;draft=clone(state)}}catch(e){}
+}
+function wireAuth(){
+  var warn=function(m){var w=$("loginwarn");if(w)w.textContent=m||""};
+  var bl=$("btnlogin");if(bl)bl.addEventListener("click",async function(){
+    if(!SB){warn("Base indisponible.");return}
+    var e=$("lemail").value.trim(),p=$("lpass").value;
+    if(!e||!p){warn("Entrez votre e-mail et votre mot de passe.");return}
+    warn("Connexion…");
+    var r=await SB.auth.signInWithPassword({email:e,password:p});
+    if(r.error){warn(trad(r.error));return}
+    warn("");$("lpass").value="";await refreshAuth();
+    if(!isEditor)warn("Connecté, mais ce compte n’est pas encore autorisé.");
+  });
+  var bs=$("btnsignup");if(bs)bs.addEventListener("click",async function(){
+    if(!SB){warn("Base indisponible.");return}
+    var e=$("lemail").value.trim(),p=$("lpass").value;
+    if(!e||p.length<6){warn("E-mail requis et mot de passe d’au moins 6 caractères.");return}
+    warn("Création du compte…");
+    var r=await SB.auth.signUp({email:e,password:p});
+    if(r.error){warn(trad(r.error));return}
+    if(r.data&&r.data.session){await refreshAuth();warn(isEditor?"":"Compte créé, mais pas encore autorisé.")}
+    else warn("Compte créé. Un e-mail de confirmation a été envoyé : ouvrez-le, confirmez, puis connectez-vous ici.");
+  });
+  var lg=$("logout");if(lg)lg.addEventListener("click",async function(ev){ev.preventDefault();if(SB){try{await SB.auth.signOut()}catch(e){}}await refreshAuth()});
+}
+async function boot(){
+  renderSite();
+  await loadConfig();
+  renderSite();
+  buildAdmin();
+  wireAuth();
+  if(!$("manage"))document.querySelector(".foot").appendChild(h("a",{id:"manage",href:"#admin",text:"Gérer le site"}));
+  window.addEventListener("hashchange",route);
+  if(SB&&SB.auth&&SB.auth.onAuthStateChange)SB.auth.onAuthStateChange(function(){refreshAuth()});
+  await refreshAuth();
+}
+boot();
 })();
 </script>
 </body></html>

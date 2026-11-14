@@ -187,7 +187,7 @@ var OS=["Reçue","En préparation","Prête","Livrée"];
 var state={};
 try{state=JSON.parse($("state").textContent)}catch(e){state={}}
 var draft=clone(state);
-var NS=null,isEditor=false,readOnly=false,busy=false,session=null;
+var NS=null,isEditor=false,isMaint=false,readOnly=false,busy=false,session=null;
 var SB_URL="https://ejzhqxiwtsniufzhycar.supabase.co";
 var SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqemhxeGl3dHNuaXVmemh5Y2FyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQxNTUzNTgsImV4cCI6MjEwOTczMTM1OH0.nXWu8YymFfgvrBAphzyabeuFyMJ_Dn2wbb4hlmp6c24";
 var SB=(window.supabase&&window.supabase.createClient)?window.supabase.createClient(SB_URL,SB_KEY):null;
@@ -212,9 +212,9 @@ var SHELL=
 +'</div>'
 +'<div id="admin" hidden>'
 +'<div class="top gut"><h1>Espace Palmeraie · Administration</h1><p>Vos changements apparaissent sur le site dès que vous cliquez sur « Publier sur le site ».</p><a href="#">Voir le site</a> <a href="#" id="logout" hidden>· Se déconnecter</a></div>'
-+'<div class="lock gut" id="lock" hidden><h2>Espace gérant</h2><p class="note" id="lockmsg">Connectez-vous pour modifier le menu, la carte et les infos du restaurant.</p><div id="loginbox"><label for="lemail">E-mail</label><input id="lemail" type="email" autocomplete="username" inputmode="email" placeholder="adresse e-mail partagée"><label for="lpass">Mot de passe</label><input id="lpass" type="password" autocomplete="current-password" placeholder="mot de passe"><p class="warn" id="loginwarn" aria-live="polite"></p><div class="cta" style="justify-content:flex-start;margin-top:.4rem"><button class="go" id="btnlogin" type="button">Se connecter</button><button class="btn alt still" id="btnsignup" type="button">Créer l’accès</button></div></div><p style="margin-top:1.2rem"><a href="#">← Retour au site</a></p></div>'
++'<div class="lock gut" id="lock" hidden><h2>Espace gérant</h2><p class="note" id="lockmsg">Connectez-vous pour modifier le menu, la carte et les infos du restaurant.</p><div id="loginbox"><label for="lemail">E-mail</label><input id="lemail" type="email" autocomplete="username" inputmode="email" placeholder="adresse e-mail partagée"><label for="lpass">Mot de passe</label><input id="lpass" type="password" autocomplete="current-password" placeholder="mot de passe"><p class="warn" id="loginwarn" aria-live="polite"></p><p class="note" id="loginhint"></p><div class="cta" style="justify-content:flex-start;margin-top:.4rem"><button class="go" id="btnlogin" type="button">Se connecter</button><button class="btn alt still" id="btnsignup" type="button">Créer l’accès</button></div></div><p style="margin-top:1.2rem"><a href="#">← Retour au site</a></p></div>'
 +'<div id="panel" hidden>'
-+'<div class="tabs gut" role="tablist" id="tb"><button role="tab" aria-selected="true" data-p="a">Menu du jour</button><button role="tab" aria-selected="false" data-p="b">Carte</button><button role="tab" aria-selected="false" data-p="c">Commandes</button><button role="tab" aria-selected="false" data-p="d">Infos</button><button role="tab" aria-selected="false" data-p="e">Annonces</button></div>'
++'<div class="tabs gut" role="tablist" id="tb"><button role="tab" aria-selected="true" data-p="a">Menu du jour</button><button role="tab" aria-selected="false" data-p="b">Carte</button><button role="tab" aria-selected="false" data-p="c">Commandes</button><button role="tab" aria-selected="false" data-p="d">Infos</button><button role="tab" aria-selected="false" data-p="e">Annonces</button><button role="tab" aria-selected="false" data-p="f" id="tabf" hidden>Gérants</button></div>'
 +'<main class="adm gut">'
 +'<section class="p on" id="a"><h2>Menu du jour</h2><div class="two"><div>'
 +'<label for="i1">Entrée</label><input id="i1" autocomplete="off" placeholder="Vide : pas d’entrée aujourd’hui"><label for="i2">Plat (vide : plat du jour de la semaine)</label><input id="i2" autocomplete="off" placeholder="Suit le plat de la semaine"><label for="i3">Boisson</label><input id="i3" autocomplete="off" placeholder="Vide : lien vers les boissons">'
@@ -227,6 +227,7 @@ var SHELL=
 +'<label for="w1">Numéro WhatsApp</label><input id="w1" type="tel" inputmode="tel" placeholder="ex. 07 00 00 00 00" autocomplete="off"><p class="warn" id="wn" aria-live="polite"></p>'
 +'<label for="s1">Slogan</label><input id="s1" autocomplete="off"></section>'
 +'<section class="p" id="e"><h2>Annonces</h2><p class="note">Ces informations s’affichent dans une bande tout en haut du site, avant « Espace Palmeraie ». Écrivez une annonce par ligne (fermeture, plat épuisé, promotion…). Laissez vide pour ne rien afficher.</p><label for="a1">Annonces pour les clients</label><textarea id="a1" rows="5" maxlength="500" placeholder="ex. Fermé exceptionnellement lundi"></textarea><label for="a2">Afficher jusqu’au (inclus)</label><input id="a2" type="date"><p class="note">Après cette date, l’annonce disparaît toute seule. Laissez vide pour l’afficher jusqu’à ce que vous l’effaciez.</p></section>'
++'<section class="p" id="f"><h2>Gérants</h2><p class="note">Vous êtes maintenancier du site. Autorisez ou retirez les gérants qui peuvent modifier le menu. Maximum 4.</p><p class="gh" id="gslots"></p><div id="glist"></div><h3 class="gh">Autoriser un gérant</h3><p class="note">Saisissez son adresse e-mail. Il pourra ensuite créer son accès avec cette adresse et le mot de passe de son choix.</p><div class="ctl"><input id="gemail" type="email" inputmode="email" autocomplete="off" placeholder="adresse e-mail du gérant"><button class="go" id="gadd" type="button">Autoriser</button></div><p class="warn" id="gwarn" aria-live="polite"></p></section>'
 +'</main>'
 +'<div class="bar gut" id="bar"><span id="bst"></span><button class="go" id="pub" type="button">Publier sur le site</button></div>'
 +'</div></div>';
@@ -547,16 +548,74 @@ function trad(err){
   if(/at least 6|password should be/i.test(m))return"Mot de passe d’au moins 6 caractères.";
   return m;
 }
-async function checkAdmin(){
-  try{var r=await SB.from("admins").select("user_id").maybeSingle();return !!(r&&r.data)}catch(e){return false}
+async function checkRole(){
+  try{var r=await SB.from("admins").select("role").maybeSingle();
+    if(r&&r.data){isMaint=(r.data.role==="maintenancier");return true}
+    isMaint=false;return false;
+  }catch(e){isMaint=false;return false}
+}
+async function showSlots(){
+  if(!SB)return;
+  try{var r=await SB.rpc("gerant_slots_left");
+    var el=$("loginhint");
+    if(el&&r&&typeof r.data==="number")el.textContent="Places de gérant : "+(4-r.data)+" / 4 occupées ("+r.data+" restante"+(r.data>1?"s":"")+").";
+  }catch(e){}
+}
+function updateMaintUI(){
+  var tf=$("tabf");if(tf)tf.hidden=!isMaint;
+  if(isMaint)renderGerants();
+  else if(location.hash==="#admin"){var fa=document.querySelector('#tb button[data-p="f"]');if(document.getElementById("f")&&document.getElementById("f").classList.contains("on")&&!isMaint)openTab("a");}
+}
+async function renderGerants(){
+  if(!SB||!isMaint)return;
+  var list=$("glist"),slots=$("gslots");if(!list)return;
+  list.textContent="Chargement…";
+  try{
+    var a=await SB.from("admins").select("user_id,email,role");
+    var al=await SB.from("allowed_admin_emails").select("email,role");
+    var admins=(a.data||[]).filter(function(x){return x.role==="gerant"});
+    var allowed=(al.data||[]).filter(function(x){return x.role==="gerant"});
+    if(slots)slots.textContent="Gérants inscrits : "+admins.length+" / 4 — autorisations utilisées : "+allowed.length+" / 4.";
+    var signed={};admins.forEach(function(x){signed[(x.email||"").toLowerCase()]=x});
+    list.textContent="";
+    if(!allowed.length){list.appendChild(h("p",{class:"note",text:"Aucun gérant autorisé pour l’instant."}));return}
+    allowed.forEach(function(e){
+      var em=e.email,a2=signed[(em||"").toLowerCase()];
+      var btn=h("button",{class:"btn alt still",type:"button",text:"Retirer"});
+      btn.addEventListener("click",function(){if(window.confirm("Retirer l’accès de "+em+" ?"))removeGerant(em,a2?a2.user_id:null)});
+      list.appendChild(h("div",{class:"row"},[h("span",null,[h("b",{text:em}),h("br"),h("span",{class:"note",text:a2?"compte créé — peut modifier le site":"en attente : doit créer son accès"})]),btn]));
+    });
+  }catch(err){list.textContent="Erreur de chargement : "+((err&&err.message)||"")}
+}
+async function addGerant(){
+  var w=function(m){var g=$("gwarn");if(g)g.textContent=m||""};
+  if(!SB||!isMaint){w("Action réservée au maintenancier.");return}
+  var em=(($("gemail").value)||"").trim().toLowerCase();
+  if(!em||em.indexOf("@")<1){w("Entrez une adresse e-mail valide.");return}
+  w("Ajout…");
+  var r=await SB.from("allowed_admin_emails").insert({email:em,role:"gerant"});
+  if(r.error){var m=r.error.message||"";
+    w(/duplicate|unique/i.test(m)?"Cette adresse est déjà autorisée.":/4 gérants|maximum/i.test(m)?"Déjà 4 gérants autorisés (maximum atteint).":m);return}
+  $("gemail").value="";w("Gérant autorisé ✅ Demandez-lui de créer son accès avec cette adresse.");
+  renderGerants();
+}
+async function removeGerant(email,user_id){
+  var w=function(m){var g=$("gwarn");if(g)g.textContent=m||""};
+  if(!SB||!isMaint)return;
+  w("Retrait…");
+  try{
+    if(user_id)await SB.from("admins").delete().eq("user_id",user_id);
+    await SB.from("allowed_admin_emails").delete().eq("email",email).eq("role","gerant");
+    w("Gérant retiré.");renderGerants();
+  }catch(err){w("Échec du retrait : "+((err&&err.message)||""))}
 }
 async function refreshAuth(){
-  isEditor=false;session=null;
+  isEditor=false;isMaint=false;session=null;
   if(SB){
     try{var s=await SB.auth.getSession();session=(s&&s.data&&s.data.session)||null}catch(e){}
-    if(session)isEditor=await checkAdmin();
+    if(session)isEditor=await checkRole();
   }
-  setChrome();updateBar();route();
+  setChrome();updateMaintUI();showSlots();updateBar();route();
 }
 async function loadConfig(){
   if(!SB)return;
@@ -593,6 +652,8 @@ async function boot(){
   renderSite();
   buildAdmin();
   wireAuth();
+  var ga=$("gadd");if(ga)ga.addEventListener("click",addGerant);
+  var ge=$("gemail");if(ge)ge.addEventListener("keydown",function(ev){if(ev.key==="Enter"){ev.preventDefault();addGerant()}});
   if(!$("manage"))document.querySelector(".foot").appendChild(h("a",{id:"manage",href:"#admin",text:"Gérer le site"}));
   window.addEventListener("hashchange",route);
   if(SB&&SB.auth&&SB.auth.onAuthStateChange)SB.auth.onAuthStateChange(function(){refreshAuth()});
